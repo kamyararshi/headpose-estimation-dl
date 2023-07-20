@@ -1,0 +1,17 @@
+data_params:
+  data_dir: dataset/300W_LP/
+  img_ext: '.jpg'
+  annot_ext: '.mat'
+  image_mode: 'RGB'
+
+images:
+  in_channels: 3
+  mean: [0.485, 0.456, 0.406]
+  std: [0.229, 0.224, 0.225]
+
+train_params:
+  num_epochs: 1
+  batch_size: 32
+  num_workers: 5
+  lr: 0.0005
+
