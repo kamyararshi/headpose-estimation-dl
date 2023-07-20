@@ -27,7 +27,7 @@ def get_list_from_filenames(data_dir, folder_names, test_dict):
     return filenames_dict
 
 
-class Pose_300W_LP(Dataset):
+class Pose300WLP(Dataset):
     # Head pose from 300W-LP dataset
     def __init__(self,
                 data_dir,
@@ -51,11 +51,11 @@ class Pose_300W_LP(Dataset):
         self.annot_ext = annot_ext
 
         TEST_SET = [os.path.join('AFW', f'AFW_9545523490_1_{i}') for i in range(18)] + [os.path.join('AFW', f'AFW_9545523490_2_{i}') for i in range(11)]\
-                    +[os.path.join('HELEN', f'HELEN_232194_1_{i}') for i in range(18)] + [os.path.join('HELEN', f'HELEN_1629243_1_{i}') for i in range(18)]\
+                    +[os.path.join('HELEN', f'HELEN_232194_1_{i}') for i in range(17)] + [os.path.join('HELEN', f'HELEN_1629243_1_{i}') for i in range(17)]\
                     +[os.path.join('IBUG', f'IBUG_image_003_1_{i}') for i in range(11)] + [os.path.join('IBUG', f'IBUG_image_004_1_{i}') for i in range(12)]\
                     +[os.path.join('LFPW', f'LFPW_image_test_0001_{i}') for i in range(16)] + [os.path.join('LFPW', f'LFPW_image_test_0002_{i}') for i in range(17)]\
                     +[os.path.join('AFW_Flip', f'AFW_9545523490_1_{i}') for i in range(18)] + [os.path.join('AFW', f'AFW_9545523490_2_{i}') for i in range(11)]\
-                    +[os.path.join('HELEN_Flip', f'HELEN_232194_1_{i}') for i in range(18)] + [os.path.join('HELEN', f'HELEN_1629243_1_{i}') for i in range(18)]\
+                    +[os.path.join('HELEN_Flip', f'HELEN_232194_1_{i}') for i in range(17)] + [os.path.join('HELEN', f'HELEN_1629243_1_{i}') for i in range(17)]\
                     +[os.path.join('IBUG_Flip', f'IBUG_image_003_1_{i}') for i in range(11)] + [os.path.join('IBUG', f'IBUG_image_004_1_{i}') for i in range(12)]\
                     +[os.path.join('LFPW_Flip', f'LFPW_image_test_0001_{i}') for i in range(16)] + [os.path.join('LFPW', f'LFPW_image_test_0002_{i}') for i in range(17)]
         
@@ -89,11 +89,15 @@ class Pose_300W_LP(Dataset):
         img = img.crop((int(x_min), int(y_min), int(x_max), int(y_max)))
 
         # We get the pose in radians
-        pose = utils.get_ypr_from_mat(mat_path)
+        pose = utils.get_pose_params_from_mat(mat_path)
         # And convert to degrees.
         pitch = pose[0] * 180 / np.pi
         yaw = pose[1] * 180 / np.pi
         roll = pose[2] * 180 / np.pi
+        tx = pose[3]
+        ty = pose[4]
+        tz = pose[5]
+        scale = pose[6]
 
         # Flip?
         rnd = np.random.random_sample()
@@ -116,7 +120,7 @@ class Pose_300W_LP(Dataset):
 
         # Get target tensors
         labels = binned_pose
-        cont_labels = torch.FloatTensor([yaw, pitch, roll])
+        cont_labels = torch.FloatTensor([yaw, pitch, roll, tx, ty, tz, scale])
 
         if self.transform is not None:
             img = self.transform(img)

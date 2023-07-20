@@ -20,8 +20,8 @@ def get_pose_params_from_mat(mat_path):
     mat = sio.loadmat(mat_path)
     # [pitch yaw roll tdx tdy tdz scale_factor]
     pre_pose_params = mat['Pose_Para'][0]
-    # Get [pitch, yaw, roll, tdx, tdy]
-    pose_params = pre_pose_params[:5]
+    # Get [pitch, yaw, roll, tdx, tdy, scale]
+    pose_params = pre_pose_params.copy()
     return pose_params
 
 def get_ypr_from_mat(mat_path):
@@ -44,7 +44,7 @@ def mse_loss(input, target):
     return torch.sum(torch.abs(input.data - target.data) ** 2)
 
 def plot_pose_cube(img, yaw, pitch, roll, tdx=None, tdy=None, size=150.):
-    # Input is a cv2 image
+    # Input is a cv2 image in shape H, W, C
     # pose_params: (pitch, yaw, roll, tdx, tdy)
     # Where (tdx, tdy) is the translation of the face.
     # For pose we have [pitch yaw roll tdx tdy tdz scale_factor]
