@@ -14,4 +14,5 @@ train_params:
   batch_size: 32
   num_workers: 5
   lr: 0.005
+  epoch_milestones: [50, 70]
 

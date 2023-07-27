@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torch.optim import Adam
+from torch.optim import Adam, lr_scheduler
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torchvision import transforms
@@ -25,7 +25,6 @@ warnings.filterwarnings('ignore')
 
 
 def main():
-    #TODO: Put training params and hparams in a yaml file
     parser = ArgumentParser(description='Head pose estimation using the ResNet-18 network.')
     parser.add_argument('--gpu', dest='gpu_id', help='GPU device id to use [0]',
             default=0, type=int)
@@ -86,7 +85,8 @@ def main():
     criterion = nn.MSELoss().to(device=device)
     optimizer = Adam(model.parameters(), lr=configs['train_params']['lr'])
 
-    #TODO: Add MultiStepLR later
+    # MultiStepLR
+    scheduler = lr_scheduler.MultiStepLR(optimizer, configs['train_params']['epoch_milestones'])
 
     # Training Loop
     model.train()
@@ -132,6 +132,8 @@ def main():
         # Logging the evaluation loss to TensorBoard
         avg_eval_loss = sum(eval_loss) / len(eval_loss)
         writer.add_scalar("Eval Loss", avg_eval_loss, epoch)
+
+        scheduler.step()
 
     writer.close()
 
